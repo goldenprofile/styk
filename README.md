@@ -46,6 +46,31 @@ uv tool uninstall styk
 Установленная команда принимает путь к вашему JSON-плану: `styk --workspace /path/to/project run /path/to/plan.json`.
 Примеры и TypeScript-расширение Pi пока используются из клона репозитория.
 
+## Создание первого плана
+
+В каталоге проекта:
+
+```bash
+styk init
+styk run styk.json
+```
+
+`init` создаёт `styk.json` для Pi; нужен установленный и авторизованный Pi.
+Начальная задача — прочитать структуру проекта и создать `hello.txt`, затем проверить его содержимое.
+Измените objective, acceptance_criteria и checks для своей задачи. Существующий план не перезаписывается.
+
+Без Pi и модели, в отдельном пустом каталоге (подходит и для PowerShell):
+
+```bash
+styk init --backend demo
+styk run styk.json
+styk status
+```
+
+Другой путь: `styk init my-plan.json --backend demo`.
+`styk --workspace /path/to/project init` создаёт план в выбранном проекте.
+Проверка в сгенерированном плане использует Python установленного Styk; после переноса плана на другой ПК создайте план заново или обновите путь к Python.
+
 ## Быстрый запуск без модели
 
 ```bash

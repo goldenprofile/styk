@@ -18,6 +18,7 @@ Run from the repository root:
 
 - Tool install: `uv tool install --python 3.12 .`; GitHub installation is documented in README.
 - Install: `python3 -m venv .venv`, activate it, then `python -m pip install -e .`.
+- Starter plan: `styk init` (Pi) or `styk init --backend demo`; never overwrite existing plans.
 - Develop: `PYTHONPATH=src python3 -m styk --help`.
 - Test: `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
 - Syntax: `python3 -m compileall -q src tests`.
