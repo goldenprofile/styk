@@ -29,3 +29,14 @@ jobs:
           demo_dir=$(mktemp -d)
           styk --workspace "$demo_dir" run examples/demo.json
           styk --workspace "$demo_dir" status
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: npm
+          cache-dependency-path: integrations/pi/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: integrations/pi
+      - run: npm run typecheck
+        working-directory: integrations/pi
+      - run: npm test
+        working-directory: integrations/pi

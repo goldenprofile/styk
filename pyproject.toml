@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "styk"
-version = "0.1.3"
+version = "0.2.0"
 description = "Local sequential worker runtime with a Pi RPC adapter"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -23,3 +23,6 @@ styk = "styk.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+styk = ["pi/*.ts"]

@@ -7,7 +7,7 @@ Styk is a Python 3.12+ prototype with no runtime dependencies.
 - `src/styk/`: CLI, sequential runtime, storage, process management, and backends.
 - `tests/`: deterministic unittest integration tests.
 - `examples/`: demo and Pi JSON plans.
-- `integrations/pi/styk.ts`: Pi extension with `/styk-run` and `/styk-cancel`.
+- `src/styk/pi/styk.ts`: bundled Pi supervisor extension; `integrations/pi/` contains its source entry point and Node tests.
 - `docs/`: architectural proposals; README describes implemented behavior.
 
 Keep configuration at the repository root. Create directories only as needed.
@@ -18,6 +18,8 @@ Run from the repository root:
 
 - Tool install: `uv tool install --python 3.12 .`; GitHub installation is documented in README.
 - Install: `python3 -m venv .venv`, activate it, then `python -m pip install -e .`.
+- Pi integration: `styk install-pi`; update an existing copy with `--force`.
+- Extension checks from `integrations/pi/`: `npm ci --ignore-scripts`, `npm run typecheck`, `npm test` (installed Styk on PATH; Node.js 22.19+).
 - Starter plan: `styk init` (Pi) or `styk init --backend demo`; never overwrite existing plans.
 - Develop: `PYTHONPATH=src python3 -m styk --help`.
 - Test: `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
@@ -26,7 +28,7 @@ Run from the repository root:
 - Lint/format (install Ruff separately): `ruff check src tests` and `ruff format --check src tests`.
 
 GitHub Actions checks installation, tests, syntax, and the demo on Linux and Windows with Python 3.12.
-Pi requires its own installation and authorization; its live integration is not covered by CI.
+Pi requires its own authorization. CI checks its extension loader and tools using demo workers; live model calls are not covered.
 
 ## Coding Style & Naming Conventions
 

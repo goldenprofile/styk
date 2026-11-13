@@ -40,9 +40,20 @@ async def terminate(process):
     await process.wait()
 
 
+async def start_process(*argv, **kwargs):
+    """Reap a child even when cancellation arrives during process creation."""
+    creation = asyncio.create_task(asyncio.create_subprocess_exec(*argv, **kwargs))
+    try:
+        return await asyncio.shield(creation)
+    except asyncio.CancelledError:
+        process = await creation
+        await terminate(process)
+        raise
+
+
 async def check_command(argv, cwd, timeout, log):
     with log.open("wb") as output:
-        process = await asyncio.create_subprocess_exec(
+        process = await start_process(
             *argv, cwd=cwd, stdout=output, stderr=asyncio.subprocess.STDOUT,
             **process_options(),
         )

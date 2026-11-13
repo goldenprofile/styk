@@ -6,7 +6,7 @@ import os
 import shutil
 from pathlib import Path
 
-from .process import process_options, terminate
+from .process import process_options, start_process, terminate
 
 
 class Blocked(Exception):
@@ -65,7 +65,7 @@ async def pi(task, workspace, attempt, config, emit):
     stderr_path = attempt / "pi.stderr.log"
     with stderr_path.open("wb") as stderr, (attempt / "pi.events.jsonl").open("wb") as raw:
         try:
-            process = await asyncio.create_subprocess_exec(
+            process = await start_process(
                 *argv, cwd=workspace, stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE, stderr=stderr, **process_options(),
                 limit=8 * 1024 * 1024,

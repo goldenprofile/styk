@@ -17,13 +17,25 @@ def main():
     init = commands.add_parser("init", help="Create a starter plan without overwriting files")
     init.add_argument("path", nargs="?", default="styk.json", help="Plan path relative to workspace")
     init.add_argument("--backend", choices=["pi", "demo"], default="pi")
+    commands.add_parser("bridge", help=argparse.SUPPRESS)
+    install = commands.add_parser("install-pi", help="Install the Pi supervisor extension")
+    install.add_argument("--path", type=Path, help="Destination .ts file (default: ~/.pi/agent/extensions/styk.ts)")
+    install.add_argument("--force", action="store_true", help="Replace an existing extension")
     commands.add_parser("run").add_argument("plan", type=Path)
     commands.add_parser("resume").add_argument("run_id")
     commands.add_parser("status").add_argument("run_id", nargs="?")
     args = parser.parse_args()
     try:
+        if args.command == "install-pi":
+            from .pi_install import install_extension
+            path = install_extension(args.path, args.force)
+            print(f"Installed {path}. Open Pi or run /reload.")
+            return 0
         if not args.workspace.is_dir():
             raise ValueError("Workspace must be an existing directory")
+        if args.command == "bridge":
+            from .bridge import main as bridge_main
+            return bridge_main(args.workspace)
         if args.command == "init":
             path = initialize(args.workspace, args.path, args.backend)
             print(f"Created {path}")
