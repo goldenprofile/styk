@@ -92,7 +92,7 @@ class Runtime:
 
     def emit(self, kind, data=None):
         event = {"time": time.time(), "run_id": self.run_id, "type": kind, **(data or {})}
-        with (self.directory / "events.jsonl").open("a") as stream:
+        with (self.directory / "events.jsonl").open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(event, ensure_ascii=False) + "\n")
         if not self.quiet:
             print(f"[{self.run_id}] {kind} {json.dumps(data or {}, ensure_ascii=False)}", flush=True)
@@ -195,7 +195,7 @@ class Runtime:
                 result["output_snapshot_id"] = snapshot(self.workspace)
                 result["error"] = item.get("error")
                 report = result.get("summary", "") + "\n\n" + (result.get("error") or "")
-                (attempt / "report.md").write_text(f"# {task['id']} attempt {item['attempts']}\n\n{report}\n")
+                (attempt / "report.md").write_text(f"# {task['id']} attempt {item['attempts']}\n\n{report}\n", encoding="utf-8")
                 result["artifact_refs"] = [str((attempt / "report.md").relative_to(self.directory))]
                 save(attempt / "result.json", result)
                 self.state["checkpoint"] = result["output_snapshot_id"]
