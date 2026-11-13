@@ -39,4 +39,5 @@ jobs:
       - run: npm run typecheck
         working-directory: integrations/pi
       - run: npm test
+        timeout-minutes: 2
         working-directory: integrations/pi

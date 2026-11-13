@@ -8,6 +8,12 @@ import { test } from "node:test";
 // Use Pi 1.5.2's actual loader, including its aliases for standalone extensions.
 const { loadExtensions } = await import(new URL("./core/extensions/loader.js",
   import.meta.resolve("@earendil-works/pi-coding-agent")));
+// Bound regressions in process/pipe handling, including Windows launchers.
+const watchdog = setTimeout(() => {
+  console.error("Extension integration test exceeded 45 seconds");
+  process.exit(1);
+}, 45000);
+watchdog.unref();
 const source = fileURLToPath(new URL("../../../src/styk/pi/styk.ts", import.meta.url));
 
 async function fixture(t) {
@@ -16,7 +22,9 @@ async function fixture(t) {
   // Copy outside the repository to check the installed extension's module resolution.
   const extension = join(directory, "styk.ts");
   await copyFile(source, extension);
+  console.error("Loading standalone extension through Pi");
   const loaded = await loadExtensions([extension], directory);
+  console.error("Extension loaded");
   assert.deepEqual(loaded.errors, []);
   const context = { cwd: directory, ui: { setStatus() {}, notify() {} } };
   return { directory, extension: loaded.extensions[0], context };
@@ -38,7 +46,7 @@ test("Pi loads the standalone extension and executes, reads and resumes a verifi
   assert.equal(run.executionMode, "sequential");
   const updates = [];
   const result = await run.execute("1", { plan: demoPlan() }, undefined,
-    (update) => updates.push(update), context);
+    (update) => { updates.push(update); console.error(update.content[0].text); }, context);
   assert.equal(result.isError, false, JSON.stringify(result));
   assert.equal(result.details.status, "SUCCEEDED");
   assert.equal((await readFile(join(directory, "hello.txt"), "utf8")).replace(/\r\n/g, "\n"), "Hello from Styk!\n");
