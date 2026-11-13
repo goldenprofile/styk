@@ -1,0 +1,21 @@
+{
+  "backend": "demo",
+  "max_attempts": 1,
+  "timeout_seconds": 10,
+  "tasks": [
+    {
+      "id": "scout",
+      "role": "scout",
+      "objective": "List workspace entries",
+      "acceptance_criteria": ["Report lists top-level entries"]
+    },
+    {
+      "id": "hello",
+      "role": "builder",
+      "dependencies": ["scout"],
+      "objective": "Create hello.txt without overwriting existing files",
+      "acceptance_criteria": ["hello.txt contains the expected greeting"],
+      "checks": [["python3", "-c", "from pathlib import Path; assert Path('hello.txt').read_text() == 'Hello from Styk!\\n'"]]
+    }
+  ]
+}

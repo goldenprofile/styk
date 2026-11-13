@@ -1,0 +1,25 @@
+.agent-runs/
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+
+
+# Local credentials and agent configuration
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+.agents/
+
+# Build and editor output
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+.DS_Store

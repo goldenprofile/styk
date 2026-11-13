@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "styk"
+version = "0.1.0"
+description = "Local sequential worker runtime with a Pi RPC adapter"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+
+[project.scripts]
+styk = "styk.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
