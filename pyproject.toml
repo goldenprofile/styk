@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "styk"
 version = "0.1.0"
 description = "Local sequential worker runtime with a Pi RPC adapter"
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 

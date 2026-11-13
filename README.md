@@ -23,6 +23,29 @@ styk --help
 Runtime не имеет внешних зависимостей; для упаковки используется setuptools.
 Имя `styk` в метаданных локального пакета не означает публикацию в PyPI.
 
+## Установка через uv
+
+С установленным [uv](https://docs.astral.sh/uv/getting-started/installation/):
+
+```bash
+uv tool install --python 3.12 git+https://github.com/goldenprofile/styk.git
+styk --help
+```
+
+Если команда `styk` не найдена, выполните `uv tool update-shell` и откройте новый терминал.
+Установка из Git поддерживается [uv tool](https://docs.astral.sh/uv/guides/tools/).
+
+Обновление до текущей версии из GitHub и удаление:
+
+```bash
+uv tool upgrade styk
+uv tool uninstall styk
+```
+
+Из локального клона: `uv tool install --python 3.12 .`.
+Установленная команда принимает путь к вашему JSON-плану: `styk --workspace /path/to/project run /path/to/plan.json`.
+Примеры и TypeScript-расширение Pi пока используются из клона репозитория.
+
 ## Быстрый запуск без модели
 
 ```bash

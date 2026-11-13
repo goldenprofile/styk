@@ -16,6 +16,7 @@ Keep configuration at the repository root. Create directories only as needed.
 
 Run from the repository root:
 
+- Tool install: `uv tool install --python 3.12 .`; GitHub installation is documented in README.
 - Install: `python3 -m venv .venv`, activate it, then `python -m pip install -e .`.
 - Develop: `PYTHONPATH=src python3 -m styk --help`.
 - Test: `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
