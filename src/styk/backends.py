@@ -3,7 +3,7 @@
 import asyncio
 import json
 
-from .process import terminate
+from .process import process_options, terminate
 
 
 class Blocked(Exception):
@@ -58,7 +58,7 @@ async def pi(task, workspace, attempt, config, emit):
         try:
             process = await asyncio.create_subprocess_exec(
                 *argv, cwd=workspace, stdin=asyncio.subprocess.PIPE,
-                stdout=asyncio.subprocess.PIPE, stderr=stderr, start_new_session=True,
+                stdout=asyncio.subprocess.PIPE, stderr=stderr, **process_options(),
                 limit=8 * 1024 * 1024,
             )
         except FileNotFoundError as error:

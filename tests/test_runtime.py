@@ -106,11 +106,18 @@ emit({"type":"agent_settled","aborted":False})
 sys.stdin.buffer.read()
 ''')
         fake.chmod(0o755)
+        create_process = asyncio.create_subprocess_exec
+
+        async def launch_fake(*argv, **kwargs):
+            if argv[0] == str(fake):
+                argv = (sys.executable, str(fake))
+            return await create_process(*argv, **kwargs)
         config = plan("pi")
         config["pi_executable"] = str(fake)
         config["tasks"][0].update(role="scout", checks=[])
         runtime = Runtime.create(self.workspace, config, quiet=True)
-        state = await runtime.execute()
+        with patch("styk.backends.asyncio.create_subprocess_exec", side_effect=launch_fake):
+            state = await runtime.execute()
         self.assertEqual(state["status"], "SUCCEEDED")
         self.assertTrue(list(runtime.directory.glob("tasks/*/attempts/*/pi.events.jsonl")))
 

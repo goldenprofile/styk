@@ -1,12 +1,16 @@
-"""Atomic state publication and a repository-scoped POSIX execution lock."""
+"""Atomic state publication and a repository-scoped execution lock."""
 
-import fcntl
 import hashlib
 import json
 import os
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 
 def save(path, value):
@@ -33,15 +37,29 @@ def load(path):
 def workspace_lock(workspace):
     directory = Path(workspace) / ".agent-runs"
     directory.mkdir(exist_ok=True)
-    with (directory / ".lock").open("a+") as stream:
+    with (directory / ".lock").open("a+b") as stream:
+        if os.name == "nt":
+            # Windows locks a byte range; keep one byte in the persistent lock file.
+            stream.seek(0, os.SEEK_END)
+            if stream.tell() == 0:
+                stream.write(b"\0")
+                stream.flush()
+            stream.seek(0)
         try:
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as error:
+            if os.name == "nt":
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as error:
             raise ValueError("Another Styk run holds the workspace lock") from error
         try:
             yield
         finally:
-            fcntl.flock(stream, fcntl.LOCK_UN)
+            if os.name == "nt":
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(stream, fcntl.LOCK_UN)
 
 
 def snapshot(workspace):

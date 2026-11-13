@@ -24,7 +24,7 @@ Run from the repository root:
 - Build: `python -m pip wheel --no-deps . --wheel-dir dist`.
 - Lint/format (install Ruff separately): `ruff check src tests` and `ruff format --check src tests`.
 
-GitHub Actions checks installation, tests, syntax, and the demo on Linux with Python 3.12.
+GitHub Actions checks installation, tests, syntax, and the demo on Linux and Windows with Python 3.12.
 Pi requires its own installation and authorization; its live integration is not covered by CI.
 
 ## Coding Style & Naming Conventions
