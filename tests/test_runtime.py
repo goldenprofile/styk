@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -120,6 +121,32 @@ sys.stdin.buffer.read()
             state = await runtime.execute()
         self.assertEqual(state["status"], "SUCCEEDED")
         self.assertTrue(list(runtime.directory.glob("tasks/*/attempts/*/pi.events.jsonl")))
+
+    @unittest.skipUnless(os.name == "nt", "Windows launcher regression")
+    async def test_pi_cmd_launcher_on_path_with_spaces(self):
+        directory = self.workspace / "Pi installation"
+        directory.mkdir()
+        # Mirror installations shipping both a POSIX launcher and pi.cmd.
+        (directory / "pi").write_text("#!/bin/sh\nexit 1\n")
+        script = directory / "worker.py"
+        script.write_text(
+            "import json, sys\n"
+            "json.loads(sys.stdin.buffer.readline())\n"
+            "print(json.dumps({'type':'response','id':'work','success':True}), flush=True)\n"
+            "print(json.dumps({'type':'message_end','message':{'role':'assistant','content':[{'type':'text','text':json.dumps({'outcome':'COMPLETED','summary':'Done'})}]}}), flush=True)\n"
+            "print(json.dumps({'type':'agent_settled','aborted':False}), flush=True)\n"
+            "sys.stdin.buffer.read()\n",
+            encoding="utf-8",
+        )
+        (directory / "pi.cmd").write_text(
+            f'@echo off\n"{sys.executable}" "%~dp0worker.py" %*\n'
+        )
+        config = plan("pi")
+        config["tasks"][0].update(role="scout", checks=[])
+        runtime = Runtime.create(self.workspace, config, quiet=True)
+        with patch.dict(os.environ, {"PATH": str(directory) + os.pathsep + os.environ["PATH"]}):
+            state = await runtime.execute()
+        self.assertEqual(state["status"], "SUCCEEDED", state)
 
     async def test_check_timeout_terminates_child(self):
         with self.assertRaises(TimeoutError):

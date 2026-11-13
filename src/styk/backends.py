@@ -2,6 +2,9 @@
 
 import asyncio
 import json
+import os
+import shutil
+from pathlib import Path
 
 from .process import process_options, terminate
 
@@ -35,7 +38,13 @@ async def demo(task, workspace, attempt, config, emit):
 
 async def pi(task, workspace, attempt, config, emit):
     tools = "read,grep,find,ls" if task["role"] == "scout" else "read,grep,find,ls,edit,write,bash"
-    argv = [config.get("pi_executable", "pi"), "--mode", "rpc", "--no-session",
+    executable = config.get("pi_executable", "pi")
+    if os.name == "nt":
+        # Prefer Windows launchers over a co-located extensionless POSIX script.
+        candidates = [executable + ext for ext in (".exe", ".cmd", ".bat")] if not Path(executable).suffix else []
+        executable = next((found for candidate in [*candidates, executable]
+                           if (found := shutil.which(candidate))), executable)
+    argv = [executable, "--mode", "rpc", "--no-session",
             "--no-extensions", "--no-mcp", "--no-skills", "--no-prompt-templates",
             "--tools", tools]
     if config.get("model"):
