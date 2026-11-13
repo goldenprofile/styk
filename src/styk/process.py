@@ -54,7 +54,8 @@ async def start_process(*argv, **kwargs):
 async def check_command(argv, cwd, timeout, log):
     with log.open("wb") as output:
         process = await start_process(
-            *argv, cwd=cwd, stdout=output, stderr=asyncio.subprocess.STDOUT,
+            *argv, cwd=cwd, stdin=asyncio.subprocess.DEVNULL,
+            stdout=output, stderr=asyncio.subprocess.STDOUT,
             **process_options(),
         )
         try:
