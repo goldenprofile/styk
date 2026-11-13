@@ -22,7 +22,7 @@ def summarize(runtime):
         if attempts:
             result = load(attempts[-1])
             task["summary"] = str(result.get("summary", ""))[:1200]
-            task["error"] = str(result.get("error", ""))[:2000]
+            task["error"] = str(result.get("error") or "")[:2000]
             task["verification"] = result.get("verification", [])
             task["result_path"] = str(attempts[-1])
             task["report_path"] = str(attempts[-1].with_name("report.md"))
